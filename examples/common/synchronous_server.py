@@ -131,8 +131,13 @@ def run_server():
     #                    port='/dev/ttyp0', timeout=1)
 
     # RTU:
+    # baudrate=9600
+    # chartime=(1. / baudrate) * 3.
+    # if chartime < 0.1:
+    #    chartime = 0.1
     # StartSerialServer(context, framer=ModbusRtuFramer, identity=identity,
-    #                   port='/tmp/ttyp0', timeout=.005, baudrate=9600)
+    #                   port='/tmp/ttyp0', baudrate=baudrate,
+    #                   interCharTimeout=chartime)
 
     # Binary
     # StartSerialServer(context,
