@@ -362,6 +362,7 @@ class ModbusSerialServer(object):
         self.bytesize = kwargs.get('bytesize', Defaults.Bytesize)
         self.parity   = kwargs.get('parity',   Defaults.Parity)
         self.baudrate = kwargs.get('baudrate', Defaults.Baudrate)
+        self.interCharTimeout = kwargs.get('interCharTimeout', None)
         self.timeout  = kwargs.get('timeout',  Defaults.Timeout)
         self.ignore_missing_slaves = kwargs.get('ignore_missing_slaves', Defaults.IgnoreMissingSlaves)
         self.socket   = None
@@ -377,7 +378,8 @@ class ModbusSerialServer(object):
         try:
             self.socket = serial.Serial(port=self.device, timeout=self.timeout,
                 bytesize=self.bytesize, stopbits=self.stopbits,
-                baudrate=self.baudrate, parity=self.parity)
+                baudrate=self.baudrate, parity=self.parity,
+                interCharTimeout=self.interCharTimeout)
         except serial.SerialException, msg:
             _logger.error(msg)
         return self.socket != None
@@ -443,8 +445,9 @@ def StartUdpServer(context=None, identity=None, address=None, **kwargs):
     server.serve_forever()
 
 
-def StartSerialServer(context=None, identity=None, **kwargs):
-    ''' A factory to start and run a udp modbus server
+def StartSerialServer(context, identity=None,
+                      framer=ModbusAsciiFramer, **kwargs):
+    ''' Helper method to start the Modbus Sync Serial server
 
     :param context: The ModbusServerContext datastore
     :param identity: An optional identify structure
@@ -456,7 +459,6 @@ def StartSerialServer(context=None, identity=None, **kwargs):
     :param timeout: The timeout to use for the serial device
     :param ignore_missing_slaves: True to not send errors on a request to a missing slave
     '''
-    framer = ModbusAsciiFramer
     server = ModbusSerialServer(context, framer, identity, **kwargs)
     server.serve_forever()
 
