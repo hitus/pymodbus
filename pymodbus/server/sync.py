@@ -532,6 +532,7 @@ class ModbusSerialServer(object):
         self.bytesize = kwargs.get('bytesize', Defaults.Bytesize)
         self.parity = kwargs.get('parity',   Defaults.Parity)
         self.baudrate = kwargs.get('baudrate', Defaults.Baudrate)
+        self.interCharTimeout = kwargs.get('interCharTimeout', None)
         self.timeout = kwargs.get('timeout',  Defaults.Timeout)
         self.ignore_missing_slaves = kwargs.get('ignore_missing_slaves',
                                                 Defaults.IgnoreMissingSlaves)
@@ -549,12 +550,13 @@ class ModbusSerialServer(object):
         """
         if self.socket: return True
         try:
-            self.socket = serial.Serial(port=self.device,
-                                        timeout=self.timeout,
-                                        bytesize=self.bytesize,
-                                        stopbits=self.stopbits,
-                                        baudrate=self.baudrate,
-                                        parity=self.parity)
+            self.socket = serial.VTIMESerial(port=self.device,
+                                             timeout=self.timeout,
+                                             bytesize=self.bytesize,
+                                             stopbits=self.stopbits,
+                                             baudrate=self.baudrate,
+                                             parity=self.parity,
+                                             interCharTimeout=self.interCharTimeout)
         except serial.SerialException as msg:
             _logger.error(msg)
         return self.socket is not None
